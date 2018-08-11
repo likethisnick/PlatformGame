@@ -12,7 +12,7 @@ class PLAYER
 		float currentFrame;
 
 		// высота "земли"
-		int ground = 150;
+		int ground = 500;
 
 
 		PLAYER(sf::Texture &image)
@@ -22,14 +22,14 @@ class PLAYER
 			rect = sf::IntRect(0, 0, 131, 140);
 			sprite.setTextureRect(sf::IntRect(0, 0, 131, 140));
 
-			dy = dy = 0;
+			dx = dy = 0;
 			currentFrame = 0;
 		}
 
 		void update(float time)
 		{
 			rect.left += dx * time;
-			if (!onGround) dy = dy + 0.0005*time;
+			if (!onGround) dy = dy + 0.0008*time;
 			rect.top += dy * time;
 			if (rect.top > ground)
 			{
@@ -128,7 +128,7 @@ int main() {
 		{
 			if (p.onGround)
 			{
-				p.dy = -0.4;
+				p.dy = -0.8;
 				p.onGround = false;
 			}
 		}
