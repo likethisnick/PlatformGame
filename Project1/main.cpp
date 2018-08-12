@@ -9,7 +9,10 @@ class PLAYER
 		sf::IntRect rect;
 		bool onGround;
 		sf::Sprite sprite;
-		float currentFrame;
+		float currentRunningFrame;
+		float currentStayingFrame;
+		float currentJumpingFrame;
+		bool LeftRight;
 
 		// высота "земли"
 		int ground = 500;
@@ -23,7 +26,10 @@ class PLAYER
 			sprite.setTextureRect(sf::IntRect(0, 0, 131, 140));
 
 			dx = dy = 0;
-			currentFrame = 0;
+			currentRunningFrame = 0;
+			currentStayingFrame = 0;
+			currentJumpingFrame = 0;
+			LeftRight = true; // right
 		}
 
 		void update(float time)
@@ -38,28 +44,54 @@ class PLAYER
 				onGround = true;
 			}
 
-			currentFrame += 0.02*time;
-			if (currentFrame > 26) currentFrame -= 26;
+			currentRunningFrame += 0.02*time;
+			currentStayingFrame += 0.01*time;
+			currentJumpingFrame += 0.005*time;
+			if (currentRunningFrame > 26) currentRunningFrame -= 26;
+			if (currentStayingFrame > 21) currentStayingFrame -= 21;
+			if (currentJumpingFrame > 15) currentJumpingFrame -= 15;
+
+			if ((int)dx == 0 && (int)dy == 0)
+			{
+				if(LeftRight)
+					sprite.setTextureRect(sf::IntRect(85*int(currentStayingFrame), 420, 85, 140));
+				else
+					sprite.setTextureRect(sf::IntRect(85 * int(currentStayingFrame)+85, 420, -85, 140));
+			}
 
 			if (dx > 0)
 			{
-				if (int(currentFrame)<9)
-					sprite.setTextureRect(sf::IntRect(131 * int(currentFrame), 0, 131, 140));
-				else if (int(currentFrame) >= 9 && int(currentFrame) < 17)
-					sprite.setTextureRect(sf::IntRect(131 * (int(currentFrame) - 9), 140, 131, 140));
-				else if (int(currentFrame) >= 17)
-					sprite.setTextureRect(sf::IntRect(131 * (int(currentFrame) - 17), 280, 131, 140));
+				if (int(currentRunningFrame)<9)
+					sprite.setTextureRect(sf::IntRect(131 * int(currentRunningFrame), 0, 131, 140));
+				else if (int(currentRunningFrame) >= 9 && int(currentRunningFrame) < 17)
+					sprite.setTextureRect(sf::IntRect(131 * (int(currentRunningFrame) - 9), 140, 131, 140));
+				else if (int(currentRunningFrame) >= 17)
+					sprite.setTextureRect(sf::IntRect(131 * (int(currentRunningFrame) - 17), 280, 131, 140));
+				LeftRight = true;
 			}
 
 			if (dx < 0)
 			{
-				if (int(currentFrame) < 9)
-					sprite.setTextureRect(sf::IntRect(131 * int(currentFrame) + 131, 0, -131, 140));
-				else if (int(currentFrame) >= 9 && int(currentFrame) < 17)
-					sprite.setTextureRect(sf::IntRect(131 * (int(currentFrame) - 9) + 131, 140, -131, 140));
-				else if (int(currentFrame) >= 17)
-					sprite.setTextureRect(sf::IntRect(131 * (int(currentFrame) - 17) + 131, 280, -131, 140));
+				if (int(currentRunningFrame) < 9)
+					sprite.setTextureRect(sf::IntRect(131 * int(currentRunningFrame) + 131, 0, -131, 140));
+				else if (int(currentRunningFrame) >= 9 && int(currentRunningFrame) < 17)
+					sprite.setTextureRect(sf::IntRect(131 * (int(currentRunningFrame) - 9) + 131, 140, -131, 140));
+				else if (int(currentRunningFrame) >= 17)
+					sprite.setTextureRect(sf::IntRect(131 * (int(currentRunningFrame) - 17) + 131, 280, -131, 140));
+				LeftRight = false;
 			}
+
+			if (!onGround)
+			{
+				if (LeftRight)
+					sprite.setTextureRect(sf::IntRect(120 * int(currentJumpingFrame), 560, 120, 140));
+				else
+					sprite.setTextureRect(sf::IntRect(120 * int(currentJumpingFrame)+120, 560, -120, 140));
+			}
+			else
+				currentJumpingFrame = 0;
+
+
 			sprite.setPosition(rect.left, rect.top);
 			dx = 0;
 		}
@@ -109,6 +141,7 @@ int main() {
 			if (event.type == sf::Event::Closed)
 				window.close();
 		}
+
 
 		// Нажата кнопка "влево"
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
