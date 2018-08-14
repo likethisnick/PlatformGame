@@ -1,12 +1,13 @@
 #include <SFML/Graphics.hpp>
 
-//6.47
+//8.55
 
 class PLAYER
 {
 	public:
 		float dx, dy;
 		sf::IntRect rect;
+		int deleteMe;
 		bool onGround;
 		sf::Sprite sprite;
 		float currentRunningFrame;
